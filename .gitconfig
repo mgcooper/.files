@@ -9,14 +9,11 @@
     email = mguycooper@gmail.com
 	signingkey = ""
 [credential]
+	helper = osxkeychain
 	username = mgcooper
-	helper = 
-	helper = /usr/local/share/gcm-core/git-credential-manager
- 	# helper = store
 [core]
 	excludesfile = /Users/mattcooper/.gitignore_global # see https://www.toptal.com/developers/gitignore/
 	pager = (which diff-so-fancy >/dev/null 2>&1 && diff-so-fancy || which brew >/dev/null 2>&1 && $(brew --prefix git)/share/git-core/contrib/diff-highlight/diff-highlight || cat)|less
-	#editor = /usr/local/bin/mate
 	editor = code --wait --new-window # don't delete the --wait
 	symlinks = true
 	# hooksPath = ~/.config/githooks # use default hooks until these are configured
@@ -34,7 +31,7 @@
 	# updateRefs = true # not sure yet, see https://github.blog/2022-10-03-highlights-from-git-2-38/
 [commit]
 	gpgsign = false
-	# template = /Users/coop558/.gitcommitmessage.txt
+	# template = /Users/mattcooper/.gitcommitmessage.txt
 [merge]
 	tool = vscode
 [mergetool]
@@ -103,10 +100,6 @@
     autocorrect = 50 # 50 = 5 seconds to accept the correction, 10 = 1 second
 [include]
     path = .gitconfig.local
-[http "https://stash.pnnl.gov"]
-	proxy = http://proxy01.pnl.gov:3128	
-[https "https://stash.pnnl.gov"]
-	proxy = http://proxy01.pnl.gov:3128
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
@@ -122,6 +115,15 @@
 # 	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 # 	trustExitCode = true
 
+# gpg signing is turned off for now but this is the default
+[gpg]
+	format = openpgp
+[gpg "openpgp"]
+	program = ""
+[http]
+	postBuffer = 104857600
+[interactive]
+	singlekey = true
 
 # ------------------------------
 # notes on rebase and autoStash:
@@ -161,16 +163,3 @@
 # here i tried removing the hash to see if it would preserve the first line which I prefer the dfault but didn't
 # git log --graph --abbrev-commit --date-order --pretty=format:'%s%C(yellow)%d%Creset %Cgreen(%cr)%Creset [%an]'
 
-
-
-
-
-
-[gpg]
-	format = openpgp
-[gpg "openpgp"]
-	program = ""
-[http]
-	postBuffer = 104857600
-[interactive]
-	singlekey = true

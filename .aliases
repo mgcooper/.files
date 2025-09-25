@@ -1,29 +1,35 @@
-# ----------------------------------------------------------------------------
-# user specific alisases and functions
-# ----------------------------------------------------------------------------
-# most borrowed from https://natelandau.com/my-mac-osx-bash_profile/
+# Author: Matt Cooper (https://github.com/mgcooper)
+# .aliases (c) 2025, Matt Cooper
+# sourced by .zshrc, .bash_profile
+
+# to test a new alias try `type <alias>`
+
 alias cp='cp -iv'
 alias mv='mv -iv'
 alias mkdir='mkdir -pv'
-alias ls='ls -Ahl' 							# ls: 			Print all file names with human readable output
-alias lsdots='ls -d .*'
-alias which='type -all' 					# which:        Find executables
-alias path='echo -e ${PATH//:/\\n}'         # path:         Echo all executable Paths
+# May 2025, replaced ls with lsd
+# alias ls='ls -AGhl' 						    # all file names with human readable output
+# alias lsdots='ls -d .*'
+alias ls='lsd -Alh --group-dirs=first'          # like ls -AGhl
+alias lsdots='lsd -Alhd --group-dirs=first .*'  # like ls -d .* (show dotfiles, human-readable, long)
+alias path='echo -e ${PATH//:/\\n}'             # Echo all executable Paths
 alias home='cd $HOME'
 alias back='cd $OLDPWD'
-alias reload='source ~/.bash_profile'
-alias update='brew update && brew upgrade && brew cleanup'
-alias open='open -a TextMate'
-alias bashrc='open ~/.bashrc'
-alias bashprofile='open ~/.bash_profile'
+alias which='command -v'      				    # Find the first executable in PATH (works in Bash & Zsh)
+alias whichall='type -a'      				    # Show all definitions (alias, builtin, function, path)
+alias update='brew update && brew upgrade && brew cleanup && pipx upgrade-all && mamba update -n base mamba -y && conda update -n base conda -y && zimfw install && zimfw update && zimfw clean && zimfw compile'
 alias less='less -R'
 alias wget='wget -c'
-alias cdp='cd $HOME/myprojects'
-alias cdpm='cd $HOME/myprojects/matlab'
+alias reload='source ~/.zprofile && exec zsh'
+# alias tree="find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'"
+
+alias cdp='cd $HOME/work/projects'
+alias cdpm='cd $HOME/MATLAB/projects'
 alias cddata='cd $HOME/work/data'
-alias cdenvs='cd /usr/local/anaconda3/envs'
-alias cdgit='cd ~/Documents/git'
-alias cdmatfunclib='cd $HOME/MATLAB/projects/matfunclib'
+# alias cdenvs='cd /usr/local/anaconda3/envs'
+
+# git
+# Could remove these if enabling Zim's git module, but need to confirm overlap
 alias gsu='git status -u'
 alias gsur='git status -u && git remote show origin'
 alias ga='git add -v' # verbose
@@ -36,13 +42,9 @@ alias gcm='git commit -m'
 alias grm='git rm --cached'
 alias gco='git checkout'
 alias gcob='git checkout -b'
-alias ..='cd ..'
-alias ...='cd ../..'
-alias ....='cd ../../..'
-alias .....='cd ../../../..'
-alias ......='cd ../../../../..'
-# next is for git managed dotfiles
-alias dotfiles='/usr/local/bin/git --git-dir=$HOME/.files/ --work-tree=$HOME'
+
+# dotfiles
+alias dotfiles='$BREWBIN/git --git-dir=$HOME/.files/ --work-tree=$HOME'
 alias dsu='dotfiles status' # prevent accidentally trying -u (will list ALL FILES!!)
 alias da='dotfiles add -v'
 alias dap='dotfiles add -p'
@@ -52,9 +54,34 @@ alias ddstaged='dotfiles diff -w -D --staged --color=always'
 alias db='dotfiles branch'
 alias dcm='dotfiles commit -m'
 
-# git-summary utility
-alias git-summary='/usr/local/sbin/git-summary/git-summary'
+# shortcuts to open files
+alias homefiles='code $HOME/'
+alias venvfiles='code $HOME/.virtualenvs'
+alias notes='code $HOME/work/notes/notes.code-workspace'
+alias cheat='code $USER_PROJECT_PATH/cheat-sheets/ '
+alias bashrc='mate $HOME/.bashrc'
+alias bashprofile='mate $HOME/.bash_profile'
+alias bashaliases='mate $HOME/.aliases'
+alias bashfunctions='mate $HOME/.functions'
+alias bashexports='mate $HOME/.exports'
+alias bashprompt='mate $HOME/.bash_prompt'
+alias bashextra='mate $HOME/.extra'
+alias bashnotes='mate $HOME/.dotnotes'
+alias gitconfig='mate $HOME/.gitconfig'
+alias opentext='open -a TextMate'
+alias openmd='grip -b'
 
 #   cleanupDS:  Recursively delete .DS_Store files
 #   -------------------------------------------------------------------
-alias cleanupDS="find . -type f -name '*.DS_Store' -ls -delete"
+alias cleanupDS="find . -type f -name '*.DS_Store' \( -ls -o -print \) -delete"
+
+
+# legacy bash ones, keep for now
+# alias update='brew update && brew upgrade && brew cleanup' # before switching to zsh
+# alias reload='source ~/.bash_profile'
+# cd
+# alias ..='cd ..'
+# alias ...='cd ../..'
+# alias ....='cd ../../..'
+# alias .....='cd ../../../..'
+# alias ......='cd ../../../../..'

@@ -1,16 +1,152 @@
+# ~/.config/starship.toml
+
+### prompt-wide configuration ###
+
+# Debug with: `starship explain`
+# Default format: https://starship.rs/config/#prompt
+
+# format = $all
+
 # Get editor completions based on the config schema
 "$schema" = 'https://starship.rs/config-schema.json'
 
-# Inserts a blank line between shell prompts
-add_newline = true
+# Timeout for commands executed by starship (ms)
+# Increase command timeout to 10 s
+command_timeout = 10000
 
-# Increase command timeout to 2 s
-command_timeout = 2000
+### package configurations ###
+
+[directory]
+style = "bold cyan"
+truncation_length = 20
+truncation_symbol = "…/"
+# truncate_to_repo = true
+
+[env_var.SHELL]
+variable = "SHELL"
+default = "unknown shell"
+disabled = false
+
+[python]
+pyenv_prefix = "pyenv "
+
+[git_branch]
+# symbol = " "
+always_show_remote = false
+# truncation_length = 50
+
+[git_commit]
+only_detached = true
+tag_disabled = false
+disabled = false # if disabled, it would not show the commit and/or tag on a checked-out release
+
+[git_metrics]
+disabled = false
+added_style = "green"
+deleted_style = "red"
+
+[conda]
+# Show the environment name like (base) or (myenv)
+# format = "[$symbol$environment](dimmed green) "
+# symbol = "🅒 "
+ignore_base = false  # set to true if you don't want to see (base)
+
+[aws]
+disabled = true
+
+[docker_context]
+disabled = true
+
+[gcloud]
+disabled = true
+
+[nodejs]
+disabled = true
+
+
+# Note: these are all defaults but for testing I defined them, comment them all out to ensure default behavior
+# [git_status]
+# style = "red"
+# # format = " [$deleted$renamed$modified$staged$untracked]($style)" # keep commented for now so conflicted, stashed, etc show up and I decide to exclude/change them or not
+# deleted = "✘"
+# renamed = "»"
+# modified = "!"
+# staged = "+"
+# untracked = "?"
+# conflicted = ""
+# stashed = ""
+
+# %F{<new-color>}<icon>%F{<default-color>}
+# deleted = "${SPACESHIP_GIT_STATUS_DELETED}"
+# deleted = "${SPACESHIP_GIT_STATUS_COLOR_DELETED="$SPACESHIP_GIT_STATUS_DELETED"}"
+# SPACESHIP_GIT_STATUS_COLOR_DELETED="${SPACESHIP_GIT_STATUS_COLOR_DELETED="$SPACESHIP_GIT_STATUS_DELETED"}"
+
+# [color "status"]
+# added = yellow
+# changed = green
+# untracked = blue
+
+# [hostname]
+# ssh_only = true
+# format = "[$hostname]($style)"
+# style = "150"
+
+
+
+# Inserts a blank line between shell prompts
+# add_newline = true
 
 # Replace the '❯' symbol in the prompt with '➜'
-[character] # The name of the module we are configuring is 'character'
+# [character] # The name of the module we are configuring is 'character'
 # success_symbol = '[➜](bold green)' # The 'success_symbol' segment is being set to '➜' with the color 'bold green'
 
 # Disable the package module, hiding it from the prompt completely
-[package]
+# [package]
 # disabled = true
+
+# These are the portions of the default format I would use, but for now I use $all
+# format = """
+# $username\
+# $hostname\
+# $git_branch\
+# $git_commit\
+# $git_state\
+# $git_metrics\
+# $git_status\
+# $package\
+# $c\
+# $cmake\
+# $java\
+# $julia\
+# $kotlin\
+# $gradle\
+# $nodejs\
+# $perl\
+# $php\
+# $python\
+# $rlang\
+# $ruby\
+# $rust\
+# $scala\
+# $solidity\
+# $swift\
+# $conda\
+# $spack\
+# $memory_usage\
+# $aws\
+# $gcloud\
+# $openstack\
+# $azure\
+# $env_var\
+# $custom\
+# $sudo\
+# $cmd_duration\
+# $line_break\
+# $jobs\
+# $battery\
+# $time\
+# $status\
+# $os\
+# $container\
+# $shell\
+# $character"""

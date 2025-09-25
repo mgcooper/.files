@@ -1,15 +1,29 @@
+# shellcheck shell=bash
 
-#### .exports
+# .exports
+# This file is for environment variables that are used by the shell and other programs.
+
 export BASH_SILENCE_DEPRECATION_WARNING=1 # suppress the prompt to switch to zsh
 export CLICOLOR=1 # enable the use of color in the bash when using ls (if defined, can use -G rather than --colors=auto)
 export LSCOLORS=ExFxCxDxBxegedabagacad
-export EDITOR='/usr/local/bin/mate' # set editor
+export EDITOR='/usr/local/bin/mate -w' # set editor
 export GIT_EDITOR='/usr/local/bin/code --wait --new-window'
 export JULIA_EDITOR='/usr/local/bin/code'
 export LESSEDIT='mate -l %lm %f'
 export LESS_TERMCAP_md="${CYAN}"; # Highlight section titles in manual pages.
 export MANPAGER='less -R --use-color -Ddg -Du+y' # -D sets colors, -Ddg sets bold text green, -Du+y sets underlined text bright yellow
 # export MANPAGER='less -X'; # Don’t clear the screen after quitting a manual page.
+
+# BREW
+export HOMEBREW_NO_AUTO_UPDATE=1 #
+export HOMEBREW_AUTO_UPDATE_SECS=604800	# autoupdate once a week (not every time).
+export HOMEBREW_PREFIX="$(brew --prefix)" # use $HOMEBREW_PREFIX in other dotfiles
+export BREWBIN=$HOMEBREW_PREFIX/bin
+
+# brew caveats
+export LDFLAGS="-L/opt/homebrew/opt/readline/lib -L/opt/homebrew/opt/sqlite/lib -L/opt/homebrew/opt/zlib/lib -L/opt/homebrew/opt/bzip2/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/readline/include -I/opt/homebrew/opt/sqlite/include -I/opt/homebrew/opt/zlib/include -I/opt/homebrew/opt/bzip2/include"
+export PKG_CONFIG_PATH="/opt/homebrew/opt/readline/lib/pkgconfig:/opt/homebrew/opt/sqlite/lib/pkgconfig:/opt/homebrew/opt/zlib/lib/pkgconfig:/opt/homebrew/opt/bzip2/lib/pkgconfig"
 
 # USER PATHS
 export USER_DATA_PATH=${HOME}/work/data
@@ -27,55 +41,22 @@ export USER_GDRIVE_PATH="$HOME/guycooper@g.ucla.edu - Google Drive/My Drive"
 # see if this resolves octave errors
 # export DYLD_LIBRARY_PATH="/usr/local/lib:$DYLD_LIBRARY_PATH"
 
-#--------------------------------
-#   CONFIGURE BREW
-#--------------------------------
-# export HOMEBREW_LOGS="/path/to/logs/folder" # just for reference, an option
-export HOMEBREW_NO_AUTO_UPDATE=1 #
-
-# I searched the brew doc's and there are no environment variables HOMEBREW_CC or HOMEBREW_CXX but issue brew --env and they are visible (clang/clang++)
-# Dec 2024: did not activate these for migration to personal, see if clang will work moving forward.
-# export HOMEBREW_CC=gcc-11
-# export HOMEBREW_CXX=g++-11
-export HOMEBREW_AUTO_UPDATE_SECS=604800	# autoupdate once a week (not every time).
-
-#--------------------------------
-#   CONFIGURE QGIS
-#--------------------------------
+# QGIS
 export QGISPATH=/Applications/QGIS.app
 	
 # for using qgis outside of qgis:
 # https://gis.stackexchange.com/questions/385395/using-pyqgis-functions-outside-qgis?noredirect=1&lq=1
 # spcifically the links in tara's answer, esp. link 1 and 3
 
-#--------------------------------
-#   CONFIGURE MATLAB
-#--------------------------------
-
+# MATLAB
 export MATLAB_ROOT_PATH=/Applications/MATLAB_R2024b.app # matlabroot
 # export MATLAB_EXEC_PATH=/Applications/MATLAB_R2024b.app/bin/matlab # executable, used by (unofficial) matlab vscode extension
 export MATLAB_STARTUP_PATH=$HOME/Documents/MATLAB # for code runner -sd $MATLAB_STARTUP_PATH option
 
-#--------------------------------
-#   CONFIGURE JAVA
-#--------------------------------
-export JAVA_HOME="/usr/local/Cellar/openjdk/23.0.1/libexec/openjdk.jdk/Contents/Home"
+# JAVA
+##export JAVA_HOME="/usr/local/Cellar/openjdk/23.0.1/libexec/openjdk.jdk/Contents/Home"
 
-#--------------------------------
-#   CONFIGURE CONDA
-#--------------------------------
-
-# define this for conda hooks (not used by conda itself)
-export CONDA_PROJECT_HOME=${USER_PROJECT_PATH}/conda
-# export CONDA_PROJECT_PATH=${USER_PROJECT_PATH}/conda # init so the alias works
-
-# this is in condarc but that may not get sourced by vscode or others, so put it here too
-# putting it here fixed the problem where conda deactivate never deactivated base
-export CONDA_AUTO_ACTIVATE_BASE=false
-
-#--------------------------------
-# 	PYTHONPATH, etc.
-#--------------------------------
+# PYTHONPATH, etc.
 
 # Add pyfunclib to python path
 # if [[ ":$PYTHONPATH:" != *":${USER_PROJECT_PATH}/python/pyfunclib:"* ]]; then
@@ -95,29 +76,32 @@ export CONDA_AUTO_ACTIVATE_BASE=false
 # export PYTHONPATH=${WORKON_HOME}/pyflowline/lib/python3.9/site-packages:${PYTHONPATH}
 # see .extra for tool-specific exports/configuration
 
-#--------------------------------
-#   CONFIGURE R
-#--------------------------------
+# R
 
-# multiple R versions can be installed side-by-side. these are options to choose one.
+# Multiple R versions can be installed side-by-side. These options select the desired version.
 
-# tell radian (and vscode?) where r is. only R_HOME is required. R_BINARY is here for reference.
-export R_HOME=/Library/Frameworks/R.framework/Resources # R.home() in the R gui
-# export R_BINARY=/Library/Frameworks/R.framework/Resources/bin # R.home('bin') in the R gui
+# Tell radian (and possibly VSCode) where R is. Only R_HOME is required. R_BINARY is here for reference.
+export R_HOME="/Library/Frameworks/R.framework/Resources"          # Same as R.home() in R GUI
+# export R_BINARY="/Library/Frameworks/R.framework/Resources/bin"  # R.home("bin") — rarely needed
 
-# tell Rstudio which R to use. not sure if Rstudio uses /usr/local/Cellar/r or /Library/Frameworks/R.framework/Resources/R
-# export RSTUDIO_WHICH_R=/usr/local/Cellar/r
+# Tell RStudio which R to use explicitly (optional; RStudio usually detects it)
+export RSTUDIO_WHICH_R="/Library/Frameworks/R.framework/Resources/R"
 
-# for cli, alias radian to use a particular r binary:
-# alias radian='radian --r-binary=/path/to/R'
+# For CLI, optionally alias radian to use a specific R binary:
+# alias radian='radian --r-binary=/Library/Frameworks/R.framework/Resources/R'
 
-#--------------------------------
-#   bash-completion (see bash_profile for sourcing them)
-#--------------------------------
-export BASH_COMPLETION_COMPAT_DIR="/usr/local/etc/bash_completion.d"
-
-#----------------------------------------------------------------------------------
 # for z package
 # . /usr/local/etc/profile.d/z.sh
-#----------------------------------------------------------------------------------
+
+# CONDA - deprecated but might modify for mamba e.g. to create project folders
+
+# define this for conda hooks (custom, not used by conda itself)
+# export CONDA_PROJECT_HOME=${USER_PROJECT_PATH}/conda
+# export CONDA_PROJECT_PATH=${USER_PROJECT_PATH}/conda # init so the alias works
+
+# this is in condarc but that may not get sourced by vscode or others, so put it here too
+# putting it here fixed the problem where conda deactivate never deactivated base
+# update: moved to end of .bash_profile after mamba is init'd
+# export CONDA_AUTO_ACTIVATE_BASE=false
+
 
