@@ -45,6 +45,9 @@ alias gcob='git checkout -b'
 
 # dotfiles
 alias dotfiles='$BREWBIN/git --git-dir=$HOME/.files/ --work-tree=$HOME'
+alias dotfiles-untracked-all='dotfiles ls-files --others'
+# alias dotfiles-untracked-top='dotfiles ls-files --others --exclude-standard --directory -- .??*'
+# alias dotfiles-untracked-deep='dotfiles ls-files --others --exclude-standard -- .??*'
 alias dsu='dotfiles status' # prevent accidentally trying -u (will list ALL FILES!!)
 alias da='dotfiles add -v'
 alias dap='dotfiles add -p'
@@ -74,6 +77,39 @@ alias openmd='grip -b'
 #   cleanupDS:  Recursively delete .DS_Store files
 #   -------------------------------------------------------------------
 alias cleanupDS="find . -type f -name '*.DS_Store' \( -ls -o -print \) -delete"
+
+
+
+# --- Setup: list only the dotfolders you *want* to recurse into
+typeset -ga DOTDIRS=(.config)  # edit as needed
+
+# 1) Only untracked *dotfiles* in $HOME (top level only; no directories)
+dotfiles-untracked-top() {
+  (
+    builtin cd -- "$HOME" || return
+    # .??*(N.) => dotfiles of length >= 3 chars (avoids . and ..), N=nullglob, . = files only
+    local -a specs=( .??*(N.) )
+    # If you also want single-letter names like ".a", use .?*(N.)
+    dotfiles ls-files -o --exclude-standard -- $specs
+  )
+}
+
+# 2) Untracked top-level dotfiles *plus* everything inside selected dotfolders (and their subfolders)
+dotfiles-untracked-deep() {
+  (
+    builtin cd -- "$HOME" || return
+    local -a specs=( .??*(N.) )
+    local d
+    for d in $DOTDIRS; do
+      [[ -d $d ]] && specs+=( "$d" )   # passing the dir lets git recurse inside it
+    done
+    dotfiles ls-files -o --exclude-standard -- $specs
+  )
+}
+
+# Optional aliases to match your style
+alias dotfiles-untracked-top='dotfiles-untracked-top'
+alias dotfiles-untracked-deep='dotfiles-untracked-deep'
 
 
 # legacy bash ones, keep for now
