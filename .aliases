@@ -80,8 +80,13 @@ alias cleanupDS="find . -type f -name '*.DS_Store' \( -ls -o -print \) -delete"
 
 
 
-# --- Setup: list only the dotfolders you *want* to recurse into
-typeset -ga DOTDIRS=(.config)  # edit as needed
+# --- List only the dotfolders to recurse into. Never include ones like .ssh, .local, .julia, .cargo, .npm, .cache, .rustup
+typeset -ga DOTDIRS=(
+  .config        # most app configs (filter inside with .gitignore if needed)
+  .git_template  # custom git hooks/templates
+#   .zsh           # zsh custom configs, completions, etc.
+#   .vim           # vim configs/colorschemes
+)
 
 # 1) Only untracked *dotfiles* in $HOME (top level only; no directories)
 dotfiles-untracked-top() {
