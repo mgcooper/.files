@@ -1,0 +1,26 @@
+# shellcheck shell=bash
+
+# Case-insensitive tab completion
+set completion-ignore-case On
+
+# Up/down arrow: history search by prefix
+"\e[A": history-search-backward
+"\e[B": history-search-forward
+
+# Cmd+Delete: kill whole line
+"\e[3;5~": kill-whole-line
+
+# Cmd+Left/Right: move to beginning/end of line
+"\e[1;5H": beginning-of-line
+"\e[1;5F": end-of-line
+
+# Option+Left/Right: move by word
+"\e[1;9D": backward-word
+"\e[1;9C": forward-word
+
+# command-shift-left/right highlights the entire line from the cursor position to the left/right
+# (Not possible with Readline)
+
+# option-shift-left/right highlights one word at a time left/right
+# (Not possible with Readline)
+

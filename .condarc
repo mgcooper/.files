@@ -1,0 +1,20 @@
+# This is the only config I use (no ~/.mambarc or ~/miniforge3/.condarc)
+# Mamba will fall back to this file if .mambarc is not present.
+
+channels:
+  - conda-forge
+channel_priority: strict
+default_channels: []
+changeps1: false # use starship prompt instead
+notify_outdated_conda: false # see 'update' alias, otherwise set true
+auto_activate_base: false # don't activate base environment by default, currenlty set false to avoid accidentally installing into base.
+create_default_packages:
+  - pip
+  - ipykernel 
+  # - ipython # ipython and jupyter are installed "globally" via pipx
+  # - jupyterlab
+
+
+
+
+

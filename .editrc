@@ -1,0 +1,23 @@
+# ~/.editrc
+# 
+# libedit configuration file. Created for use by Octave.
+
+# ~/.editrc
+
+# Cmd+Delete → kill whole line
+# (iTerm2 / Terminal Mac sends ESC [ 3 ; 5 ~ for ⌘⌫)
+bind "^[[3;5~" kill-whole-line
+
+# Cmd+Left/Right → beginning/end of line
+# (Terminal sends ESC [ 1 ; 5 H / ESC [ 1 ; 5 F)
+bind "^[[1;5H" beginning-of-line
+bind "^[[1;5F" end-of-line
+
+# Option+Left/Right → word motions
+# (Terminal sends ESC [ 1 ; 9 D / ESC [ 1 ; 9 C)
+bind "^[[1;9D" backward-word
+bind "^[[1;9C" forward-word
+
+# Up/Down arrow → history search by prefix
+bind "^[[A" history-search-backward
+bind "^[[B" history-search-forward

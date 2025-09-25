@@ -1,0 +1,260 @@
+# ~/.octaverc: Octave per-user initialization file.
+
+disp("sourcing octaverc")
+
+# See comments at bottom about package installation etc.
+
+# If Octave is launched from the GUI (e.g. via .app launcher), it won't inherit the terminal PATH.
+# Ensure system utilities like `info` are in PATH — needed for help and pkg docs.
+currentPath = getenv("PATH");
+setenv("PATH", [currentPath, ":", "/opt/homebrew/bin"]);
+
+# Temporarily suppress warnings during package loading
+warning("off", "Octave:addpath-pkg")
+warning("off", "Octave:shadowed-function")
+warning("off", "Octave:language-extension");
+
+# NOTE: Function argument validation blocks are unsupported in Octave;
+#       INCORRECT RESULTS ARE POSSIBLE in code relying on them.
+
+# Try to load packages or install if not found. 
+# Packages are installed to ~/.local/share/octave/
+% function tryload(pkgname, install_cmd)
+%   info = pkg("list");
+%   info = info{1};
+%   if isempty(info)
+%     names = {};
+%   else
+%     names = {info.name};
+%   endif
+%
+%   if any(strcmp(pkgname, names))
+%     try
+%       pkg load (pkgname);
+%     catch
+%       warning("Installed but failed to load: %s", pkgname);
+%     end
+%   else
+%     warning("Package %s not found. Attempting install...", pkgname);
+%     try
+%       eval(install_cmd);
+%       pkg load (pkgname);
+%       printf("Successfully installed and loaded %s\n", pkgname);
+%     catch
+%       warning("Failed to install/load package: %s", pkgname);
+%     end
+%   end
+% endfunction
+%
+% % Forge packages
+
+% can't get control or geometry to install from forge. Got geometry using custom edited package (see below) and thus mapping installs, but couldn't get control and thus signal fails.
+% pkg_names = {"io", "struct", "statistics", "optim", "matgeom", "image", "tablicious", "netcdf"};
+% cellfun(@(name) tryload(name, ["pkg install -forge " name]), pkg_names);
+
+# pkg install -forge io
+# pkg install -forge struct
+# pkg install -forge statistics
+# pkg install -forge optim
+# pkg install -forge matgeom
+# pkg install -forge image
+# pkg install -forge tablicious
+# pkg install -forge netcdf
+
+% These fail
+# pkg install -forge geometry
+# pkg install -forge mapping
+# pkg install -forge control
+# pkg install -forge signal
+
+% tryload("io",          'pkg install -forge io');
+% tryload("struct",      'pkg install -forge struct');
+% tryload("statistics",  'pkg install -forge statistics');
+% tryload("optim",       'pkg install -forge optim');
+% tryload("image",       'pkg install -forge image');
+% tryload("control",     'pkg install -forge control');
+% tryload("signal",      'pkg install -forge signal');  % note: signal requires control, may fail, couldn't get pkg install -forge control to work
+
+% GitHub packages
+% tryload("tablicious",  'pkg install https://github.com/apjanke/octave-tablicious/archive/refs/heads/master.zip');
+% tryload("packajoozle", 'pkg install https://github.com/apjanke/octave-packajoozle/archive/master.zip');
+
+% Optional/missing dependencies
+% tryload("geometry",  'pkg install -forge geometry');
+% tryload("matgeom",   'pkg install -forge matgeom');
+% tryload("mapping",   'pkg install -forge mapping'); # install may fail due to errors installing geometry
+
+% I got geometry installed using the modified package here:
+% https://octave.discourse.group/t/geometry-package-installation/5915/8
+% the user just replaced binary_function with std::function
+
+# To reinstall packages:
+# pkg install -forge io
+# pkg install -forge struct
+# pkg install -forge statistics
+# pkg install -forge optim
+# pkg install -forge matgeom
+# pkg install -forge geometry
+# pkg install -forge mapping
+# pkg install -forge image
+# pkg install -forge control
+# pkg install -forge tablicious
+# pkg install -forge netcdf
+
+# pkg install https://github.com/apjanke/octave-packajoozle/archive/master.zip
+
+# Load custom readline keybindings from ~/.inputrc to override any conflicting keybindings from Octave.
+% editrc = fullfile(getenv("HOME"), ".editrc");
+% if (exist ("readline_read_init_file") == 5)
+%   readline_read_init_file (editrc);
+% elseif (exist ("read_readline_init_file") == 5)
+%   read_readline_init_file (editrc);
+% endif
+
+# Until I get startup.m octave-compatible, add my matlab path, but note - it will be helpful to keep this commented out for debugging octave portability
+% addpath("~/MATLAB")
+addpath("~/Documents/MATLAB") # add this so funclibpath.m and finish.m are available when funclibpath('rmpath') is called
+
+# Once startup.m is octave-compatible:
+if exist('~/Documents/MATLAB/startup.m', 'file')
+   source('~/Documents/MATLAB/startup.m')
+endif
+
+# Restore warning state
+warning("on", "Octave:addpath-pkg")
+warning("on", "Octave:shadowed-function")
+warning("on", "Octave:language-extension");
+
+# This may be preferred
+# struct_levels_to_print(1);
+
+# Suppress verbose help output, improve prompt output behavior (Turn off Octave's annoying pager.)
+suppress_verbose_help_message = true;
+page_output_immediately = true;
+page_screen_output = false;
+
+# Disable Octave crash-dump workspace files
+crash_dumps_octave_core = false;
+sigterm_dumps_octave_core = false;
+sighup_dumps_octave_core = false;
+
+# Configure font sizes and line widths for better display on high-DPI screens (Octave might need lager font sizes than matlab)
+set(0, "defaulttextfontsize", 24)   # Plot titles
+set(0, "defaultaxesfontsize", 16)   # Axis labels
+set(0, "defaulttextfontname", "Source Code Pro")
+set(0, "defaultaxesfontname", "Source Code Pro")
+set(0, "defaultlinelinewidth", 2)
+
+# Octave settings for better MATLAB compatibility (use these instead of launching with --traditional or --braindead which may suppress other desirable features)
+confirm_recursive_rmdir = false;
+crash_dumps_octave_core = false;
+optimize_diagonal_matrix = false;
+optimize_permutation_matrix = false;
+optimize_range = false;
+fixed_point_format = true;
+history_timestamp_format_string = "%%-- %D %I:%M %p --%%";
+print_empty_dimensions = false;
+print_struct_array_contents = true;
+struct_levels_to_print = 0;
+save_default_options = "-mat-binary";
+# This evaluates both sides of && abd || even when unnecessary. This is technically incorrect, but mimics MATLAB's past behavior. Uncomment if code depends on side-effects inside conditionals
+# do_braindead_shortcircuit_evaluation = true;
+# This disables output from functions unless a value is explicitly returned or suppressed with a semicolon, matching MATLAB’s quiet-by-default behavior
+silent_functions = true;
+
+# Disable warnings for MATLAB compatibility
+warning("off", "Octave:abbreviated-property-match");
+warning("off", "Octave:colon-nonscalar-argument");
+warning("off", "Octave:data-file-in-path");
+warning("off", "Octave:empty-index");
+warning("off", "Octave:function-name-clash");
+warning("off", "Octave:possible-matlab-short-circuit-operator");
+
+# Optionally warn about using Octave-only language features. Note: this will print a lot of annoying warnings to the screen, particularly when loading and installing packages, about things like bare newlines and using ! as an operator, which is allowed in Octave but not Matlab, so it's disabled in the tryload section above, and if the warnings persist during normal operations, try disabling and re-enable as needed for compatibility checks.
+warning("off", "Octave:language-extension");
+
+% cd(getenv('MATLAB_HOME_PATH'))
+
+# # To see which packages are installed
+# pkg list
+
+# # To install packages:
+# pkg install -forge struct
+# pkg install -forge statistics
+# pkg install -forge tablicious
+# pkg install -forge optim
+# pkg install -forge signal # findpeaks, rms, sgolayfilt, sgolay, 
+# pkg install -forge netcdf # all the ones you'd expect
+# pkg install -forge ncarray # small collection of functions for working with netcdf files
+# pkg install -forge strings # nothing useful
+# pkg install -forge image # appears to be a fairly complete drop in for matlab image toolbox
+# pkg install -forge mapping # all the mapping stuff, requires io, geometry, matgeom
+# pkg install -forge general # dict
+# pkg install -forge matgeom
+# pkg install -forge geometry # extends matgeom, huge libray, does not appear matlab compatible
+# pkg install -forge bioinfo
+# pkg install -forge pythonic
+# pkg install -forge jupyter-notebooks # requires json
+# pkg install -forge fem-fenics
+# pkg install -forge data-smoothing # only four or so functions, not recognized
+
+
+
+% ---------------------------------------------------------------------
+
+# # If Octave is running in a known terminal emulator set the title.
+% term_title = ["GNU Octave " version];
+% if (exist ("isguirunning") && isguirunning ())
+%   PS1 ("octave:\\#> ");
+% elseif (regexp (getenv ("TERM"), "^(rxvt|xterm)"))
+%   PS1 (["\\[\\033]0;" term_title "\\007\\033[32m\\]octave:\\#>\\[\\033[00m\\] "]);
+% else
+%   PS1 ("octave:\\#> ");
+% end
+% clear term_title
+
+% # Set up Octave editor.
+% if getenv ("DISPLAY") && file_in_path (getenv ("PATH"), "gvim")
+%   edit editor "gvim %s"
+%   edit mode async
+% else
+%   edit mode sync
+% endif
+
+% # Save interpreter history with the same settings as for bash.
+% if (exist ("history_control") == 5)
+%   history_control ("ignoreboth");
+% endif
+% history_file ("~/.octave_history");
+% if (exist ("history_save") == 5)
+%   history_save (true);
+% endif
+% history_size (1000);
+% if (exist (history_file ()))
+%   history ("-r", history_file ());
+% endif
+
+% # Set up plotting preferences, but only if we're graphical.
+% if (getenv ("DISPLAY"))
+
+%   # Use Qt or FLTK for plotting by default if available.
+%   if (exist ("available_graphics_toolkits") == 5)
+%     if (any (cell2mat (strfind (available_graphics_toolkits (), "qt"))))
+%       graphics_toolkit ("qt");
+%     elseif (any (cell2mat (strfind (available_graphics_toolkits (), "fltk"))))
+%       graphics_toolkit ("fltk");
+%     elseif (any (cell2mat (strfind (available_graphics_toolkits (), "gnuplot"))))
+%       graphics_toolkit ("gnuplot");
+%     endif
+%   endif
+
+%   # Choose Gnuplot terminal based on available.
+%   [status, s] = system ([gnuplot_binary " -e 'set term' 2>&1 | grep '\\<qt\\> '"]);
+%   if isempty (s)
+%     putenv ("GNUTERM", "x11");
+%   else
+%     putenv ("GNUTERM", "qt");
+%   endif
+%   clear s status
+
+% endif
